@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise Freelance Retainer Dashboard</title>
+    <style>
+        /* CSS Custom Properties for Core Dual-Theming Architecture */
+        :root {
+            /* Dark Theme Parameters (Default State) */
+            --bg-main: #020617;
+            --bg-card: #0f172a;
+            --bg-input: #020617;
+            --border-color: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-blue: #3b82f6;
+            --accent-indigo: #4f46e5;
+            --accent-emerald: #10b981;
+            --btn-delete-hover: #f87171;
+        }
+
+        [data-theme="light"] {
+            /* Light Theme Override Parameters */
+            --bg-main: #f1f5f9;
+            --bg-card: #ffffff;
+            --bg-input: #f8fafc;
+            --border-color: #cbd5e1;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --accent-blue: #2563eb;
+            --accent-indigo: #4338ca;
+            --accent-emerald: #059669;
+            --btn-delete-hover: #ef4444;
+        }
+        
+        /* Modern Reset and Standard System Typography Layout */
+        * { box-sizing: border-box; margin: 0; padding: 0; transition: background-color 0.3s, border-color 0.3s, color 0.2s; }
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 48px 16px;
+            line-height: 1.5;
+        }
+
+        .max-w-5xl { max-width: 1024px; margin: 0 auto; }
+        
+        /* Corporate Layout Header Control */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 24px;
+            margin-bottom: 48px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        h1 {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: linear-gradient(to right, #60a5fa, #818cf8, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        [data-theme="light"] h1 {
+            background: linear-gradient(to right, #1d4ed8, #4338ca, #6d28d9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .subtitle { color: var(--text-muted); font-size: 14px; margin-top: 4px; font-weight: 500; }
+        
+        .header-actions { display: flex; align-items: center; gap: 16px; }
+        
+        /* Theme Switcher Toggle Button */
+        .theme-toggle-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 10px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+        .theme-toggle-btn:hover { background: var(--bg-input); border-color: var(--accent-blue); }
+
+        .badge {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 10px 16px;
+            font-family: monospace;
+            font-size: 12px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .dot { width: 8px; height: 8px; background: var(--accent-emerald); border-radius: 50%; }
+
+        /* Grid Architecture Setup */
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 32px;
+        }
+        @media (min-width: 1024px) {
+            .grid-layout { grid-template-columns: 1fr 2fr; }
+        }
+
+        .space-y-6 > * + * { margin-top: 24px; }
+        
+        /* Interface Modular Cards */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+            position: relative;
+        }
+        .card-title-upper { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 8px; }
+        .revenue-big { font-size: 36px; font-weight: 900; color: var(--text-main); tracking-tight: -1px; }
+        .divider { border-top: 1px solid var(--border-color); margin-top: 24px; padding-top: 16px; }
+        .revenue-sub { font-size: 24px; font-weight: 700; color: var(--accent-emerald); }
+
+        /* Interactive Data Fields & Inputs */
+        .form-title { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-main); border-b: 1px solid var(--border-color); padding-bottom: 8px; margin-bottom: 16px; }
+        .input-group { margin-bottom: 14px; }
+        .input-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 6px; }
+        input, select {
+            width: 100%;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: 14px;
+            outline: none;
+        }
+        input:focus, select:focus { border-color: var(--accent-blue); }
+        
+        .btn-inject {
+            width: 100%;
+            background: linear-gradient(to right, var(--accent-blue), var(--accent-indigo));
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            border: none;
+            border-radius: 12px;
+            padding: 14px;
+            cursor: pointer;
+            box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.3);
+            margin-top: 8px;
+        }
+        .btn-inject:hover { opacity: 0.95; }
+        .btn-inject:active { transform: scale(0.99); }
+
+        /* Pipeline Tracking Panel Engine */
+        .pipeline-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding: 16px 24px; }
+        .stream-counter-badge { background: var(--bg-input); color: var(--text-muted); font-family: monospace; font-size: 12px; padding: 4px 10px; border-radius: 6px; border: 1px solid var(--border-color); }
+        .pipeline-body { padding: 24px; flex-grow: 1; overflow-y: auto; max-height: 450px; }
+        
+        ul { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+        
+        /* Pipeline Core Items Style */
+        .pipeline-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+        }
+        .pipeline-item:hover { border-color: var(--text-muted); }
+        .item-title { font-size: 14px; font-weight: 600; color: var(--text-main); }
+        .item-sub { font-size: 12px; font-family: monospace; color: var(--text-muted); margin-top: 2px; }
+        
+        .right-actions { display: flex; align-items: center; gap: 12px; }
+        .status-pill {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid transparent;
+        }
+        .status-active { background: rgba(59, 130, 246, 0.1); color: var(--accent-blue); border-color: rgba(59, 130, 246, 0.2); }
+        .status-completed { background: rgba(16, 185, 129, 0.1); color: var(--accent-emerald); border-color: rgba(16, 185, 129, 0.2); }
+        
+        .btn-delete { background: transparent; border: none; color: var(--text-muted); cursor: pointer; padding: 6px; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+        .btn-delete:hover { color: var(--btn-delete-hover); background: var(--bg-card); }
+        
+        .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 64px 0; text-align: center; }
+        .empty-icon { font-size: 36px; margin-bottom: 8px; color: var(--text-muted); }
+        .empty-text { font-size: 14px; color: var(--text-muted); font-weight: 500; }
+    </style>
+</head>
+<body>
+
+    <div class="max-w-5xl">
+        <!-- Dashboard Header Architecture -->
+        <header>
+            <div>
+                <h1>Retainer Hub & Revenue Tracker</h1>
+                <div class="subtitle">Enterprise Pipeline Management System</div>
+            </div>
+            <div class="header-actions">
+                <button id="theme-toggle" class="theme-toggle-btn">
+                    <span id="theme-icon">☀️</span> <span id="theme-text">Light Mode</span>
+                </button>
+                <div class="badge">
+                    <span class="dot"></span>
+                    System Operational
+                </div>
+            </div>
+        </header>
+        
+        <!-- Application Core Functional Grid Layout -->
+        <div class="grid-layout">
+            
+            <!-- Left Panel Column Section -->
+            <div class="space-y-6">
+                <!-- Metrics Panel Display -->
+                <div class="card">
+                    <h3 class="card-title-upper">Targeted Monthly Revenue</h3>
+                    <div class="revenue-big" id="total-revenue">$0</div>
+                    <div class="divider">
+                        <div class="card-title-upper">Current Active Stream</div>
+                        <div class="revenue-sub" id="stream-count">0 Streams</div>
+                    </div>
+                </div>
+
+                <!-- Project Entry Form -->
+                <div class="card">
+                    <div class="form-title">Add Project Stream</div>
+
+                    <div class="input-group">
+                        <label class="input-label" for="project-name">Client Name</label>
+                        <input id="project-name" type="text" placeholder="Northwind Labs" />
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label" for="project-budget">Monthly Budget (USD)</label>
+                        <input id="project-budget" type="number" min="1" step="1" placeholder="2500" />
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label" for="project-status">Deployment Status</label>
+                        <select id="project-status">
+                            <option value="Active">Active Contract</option>
+                            <option value="Completed">Completed Run</option>
+                        </select>
+                    </div>
+
+                    <button id="add-btn" class="btn-inject">Inject Stream</button>
+                </div>
+            </div>
+
+            <!-- Right Panel Column Section -->
+            <div class="card" style="padding: 0; overflow: hidden;">
+                <div class="pipeline-header">
+                    <strong>Live Active Pipeline</strong>
+                    <span class="stream-counter-badge" id="stream-count-inline">0 Streams</span>
+                </div>
+                <div class="pipeline-body">
+                    <ul id="pipeline-list" aria-live="polite"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const pipelineList = document.getElementById('pipeline-list');
+        const totalRevenueDisplay = document.getElementById('total-revenue');
+        const streamCountDisplay = document.getElementById('stream-count');
+        const streamCountInline = document.getElementById('stream-count-inline');
+        const addBtn = document.getElementById('add-btn');
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        const themeText = document.getElementById('theme-text');
+
+        let projectsPipeline = JSON.parse(localStorage.getItem('freelance_pipeline')) || [];
+        let currentTheme = localStorage.getItem('freelance_theme') || 'dark';
+
+        function initTheme() {
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            if (currentTheme === 'light') {
+                themeIcon.textContent = '🌙';
+                themeText.textContent = 'Dark Mode';
+            } else {
+                themeIcon.textContent = '☀️';
+                themeText.textContent = 'Light Mode';
+            }
+        }
+
+        function updateFinancialMetrics() {
+            const totalEarnings = projectsPipeline
+                .filter((proj) => proj.status === 'Completed' || proj.status === 'Active')
+                .reduce((acc, curr) => acc + Number(curr.budget || 0), 0);
+
+            totalRevenueDisplay.textContent = `$${totalEarnings.toLocaleString()}`;
+            const label = `${projectsPipeline.length} Stream${projectsPipeline.length !== 1 ? 's' : ''}`;
+            streamCountDisplay.textContent = label;
+            streamCountInline.textContent = label;
+        }
+
+        function renderPipeline() {
+            pipelineList.innerHTML = '';
+
+            if (projectsPipeline.length === 0) {
+                pipelineList.innerHTML = `
+                    <li class="empty-state">
+                        <div class="empty-icon">📁</div>
+                        <p class="empty-text">No active contracts found in local system memory.</p>
+                    </li>
+                `;
+                updateFinancialMetrics();
+                return;
+            }
+
+            projectsPipeline.forEach((project) => {
+                const li = document.createElement('li');
+                li.className = 'pipeline-item';
+                const statusClass = project.status === 'Completed' ? 'status-completed' : 'status-active';
+
+                li.innerHTML = `
+                    <div>
+                        <div class="item-title">${project.name}</div>
+                        <div class="item-sub">$${Number(project.budget || 0).toLocaleString()} Monthly Retainer</div>
+                    </div>
+                    <div class="right-actions">
+                        <span class="status-pill ${statusClass}">${project.status}</span>
+                        <button type="button" class="btn-delete secure-delete-trigger" data-id="${project.id}" aria-label="Delete ${project.name}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="pointer-events: none;">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-14v1a3 3 0 003 3h10M4 7h16" />
+                            </svg>
+                        </button>
+                    </div>
+                `;
+
+                pipelineList.appendChild(li);
+            });
+
+            updateFinancialMetrics();
+        }
+
+        themeToggleBtn.addEventListener('click', () => {
+            currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            localStorage.setItem('freelance_theme', currentTheme);
+            initTheme();
+        });
+
+        addBtn.addEventListener('click', () => {
+            const nameInput = document.getElementById('project-name').value.trim();
+            const budgetInput = Number(document.getElementById('project-budget').value);
+            const statusInput = document.getElementById('project-status').value;
+
+            if (nameInput === '' || !Number.isFinite(budgetInput) || budgetInput <= 0) {
+                alert('Please fill out all fields with valid data.');
+                return;
+            }
+
+            const newProject = {
+                id: Date.now(),
+                name: nameInput,
+                budget: budgetInput,
+                status: statusInput
+            };
+
+            projectsPipeline.push(newProject);
+            localStorage.setItem('freelance_pipeline', JSON.stringify(projectsPipeline));
+            renderPipeline();
+
+            document.getElementById('project-name').value = '';
+            document.getElementById('project-budget').value = '';
+            document.getElementById('project-status').value = 'Active';
+        });
+
+        pipelineList.addEventListener('click', (event) => {
+            const deleteTargetButton = event.target.closest('.secure-delete-trigger');
+            if (!deleteTargetButton) return;
+
+            const targetProjectId = Number(deleteTargetButton.getAttribute('data-id'));
+            projectsPipeline = projectsPipeline.filter((proj) => proj.id !== targetProjectId);
+            localStorage.setItem('freelance_pipeline', JSON.stringify(projectsPipeline));
+            renderPipeline();
+        });
+
+        initTheme();
+        renderPipeline();
+    </script>
+</body>
+</html>
+
